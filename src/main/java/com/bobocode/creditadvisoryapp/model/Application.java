@@ -1,14 +1,15 @@
 package com.bobocode.creditadvisoryapp.model;
 
 import com.bobocode.creditadvisoryapp.enums.AppStatus;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,6 +30,7 @@ public class Application {
   private BigDecimal amount;
 
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private AppStatus status;
 
   @Column(nullable = false, insertable = false, updatable = false)
@@ -42,8 +44,15 @@ public class Application {
   @JoinColumn(name = "applicant_id")
   private Applicant applicant;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "advisor_id")
   private Advisor advisor;
+
+  public void assignAdvisor(Advisor advisor) {
+    this.setAssigned(LocalDateTime.now());
+    this.setStatus(AppStatus.ASSIGNED);
+    advisor.setRole(advisor.retrieveRole(this.getAmount().toBigInteger().intValue()));
+    advisor.addApplication(this);
+  }
 
 }

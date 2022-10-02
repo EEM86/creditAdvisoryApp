@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -34,7 +35,7 @@ public class Applicant extends User {
   private List<Phone> phones = new ArrayList<>();
 
   @ToString.Exclude
-  @OneToMany(mappedBy = "applicant")
+  @OneToMany(mappedBy = "applicant", cascade = { CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
   @Setter(AccessLevel.PRIVATE)
   private List<Application> apps = new ArrayList<>();
 
